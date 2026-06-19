@@ -1,4 +1,5 @@
-declare const BABYLON: any;
+/// <reference types="babylonjs" />
+/// <reference types="babylonjs-loaders" />
 
 const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
 const engine = new BABYLON.Engine(canvas, true);
@@ -128,7 +129,7 @@ const createScene = () => {
         );
         spark.position = hit.pickedPoint;
         spark.material = new BABYLON.StandardMaterial("sparkMat", scene);
-        spark.material.emissiveColor = new BABYLON.Color3(1, 1, 0);
+        (spark.material as BABYLON.StandardMaterial).emissiveColor = new BABYLON.Color3(1, 1, 0);
         setTimeout(() => spark.dispose(), 200);
       }
     }
