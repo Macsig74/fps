@@ -80,7 +80,7 @@ const createScene = () => {
   BABYLON.SceneLoader.ImportMesh(
     "",
     "assets/",
-    "ak2.gltf",
+    "ak.gltf",
     scene,
     (meshes: any[]) => {
       const gun = meshes[0];
