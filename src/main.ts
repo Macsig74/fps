@@ -106,6 +106,34 @@ const createScene = () => {
 
   sensSlider.addEventListener("click", (e) => e.stopPropagation());
 
+  scene.onPointerObservable.add((pointerInfo: any) => {
+    if (
+      pointerInfo.type === BABYLON.PointerEventTypes.POINTERDOWN &&
+      pointerInfo.event.button === 0 &&
+      document.pointerLockElement
+    ) {
+      shoot();
+      const ray = scene.createPickingRay(
+        engine.getRenderWidth() / 2,
+        engine.getRenderHeight() / 2,
+        BABYLON.Matrix.Identity(),
+        camera,
+      );
+      const hit = scene.pickWithRay(ray);
+      if (hit && hit.pickedPoint) {
+        const spark = BABYLON.MeshBuilder.CreateSphere(
+          "spark",
+          { diameter: 0.15 },
+          scene,
+        );
+        spark.position = hit.pickedPoint;
+        spark.material = new BABYLON.StandardMaterial("sparkMat", scene);
+        spark.material.emissiveColor = new BABYLON.Color3(1, 1, 0);
+        setTimeout(() => spark.dispose(), 200);
+      }
+    }
+  });
+
   pauseDiv.addEventListener("click", () => {
     canvas.requestPointerLock();
     paused = false;
@@ -136,19 +164,61 @@ const createScene = () => {
   createWall("wall3", 6, 3, 0.5, -7, 1.5, -3);
   createWall("wall4", 0.5, 3, 12, -10, 1.5, 2);
 
+  // Son de tir custom
+  const gunshotAudio = new Audio("assets/gunshot.ogg");
+  gunshotAudio.volume = 0.5;
+
+  let gunMesh: any = null;
+  let muzzleFlash: any = null;
+  const gunOrigPos = new BABYLON.Vector3(0.3, -0.08, 1.5);
+  const gunOrigRot = new BABYLON.Vector3(0, Math.PI, 0);
+
   BABYLON.SceneLoader.ImportMesh(
     "",
     "assets/",
     "ak.gltf",
     scene,
     (meshes: any[]) => {
-      const gun = meshes[0];
-      gun.parent = camera;
-      gun.position = new BABYLON.Vector3(0.3, -0.08, 1.5);
-      gun.scaling = new BABYLON.Vector3(0.55, 0.55, 0.55);
-      gun.rotation = new BABYLON.Vector3(0, Math.PI, 0);
+      gunMesh = meshes[0];
+      gunMesh.parent = camera;
+      gunMesh.position = gunOrigPos.clone();
+      gunMesh.scaling = new BABYLON.Vector3(0.55, 0.55, 0.55);
+      gunMesh.rotation = gunOrigRot.clone();
+
+      // Muzzle flash attaché au bout de l'arme
+      muzzleFlash = BABYLON.MeshBuilder.CreatePlane("muzzle", { size: 0.5 }, scene);
+      muzzleFlash.parent = gunMesh;
+      muzzleFlash.position = new BABYLON.Vector3(0, 0.3, -1.2);
+      muzzleFlash.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
+      const muzzleMat = new BABYLON.StandardMaterial("muzzleMat", scene);
+      muzzleMat.emissiveColor = new BABYLON.Color3(1, 0.8, 0.2);
+      muzzleMat.disableLighting = true;
+      muzzleMat.alpha = 0;
+      muzzleFlash.material = muzzleMat;
     },
   );
+
+  const shoot = () => {
+    // Son
+    gunshotAudio.currentTime = 0;
+    gunshotAudio.play();
+
+    // Muzzle flash
+    if (muzzleFlash) {
+      (muzzleFlash.material as any).alpha = 1;
+      setTimeout(() => { (muzzleFlash.material as any).alpha = 0; }, 50);
+    }
+
+    // Recul : l'arme recule vers le joueur et le canon monte
+    if (gunMesh) {
+      gunMesh.position.z = gunOrigPos.z - 0.15;
+      gunMesh.rotation.x = gunOrigRot.x + 0.1;
+      setTimeout(() => {
+        gunMesh.position = gunOrigPos.clone();
+        gunMesh.rotation = gunOrigRot.clone();
+      }, 80);
+    }
+  };
 
   return scene;
 };
