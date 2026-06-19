@@ -77,6 +77,20 @@ const createScene = () => {
   createWall("wall3", 6, 3, 0.5, -7, 1.5, -3);
   createWall("wall4", 0.5, 3, 12, -10, 1.5, 2);
 
+  BABYLON.SceneLoader.ImportMesh(
+    "",
+    "assets/",
+    "ak2.gltf",
+    scene,
+    (meshes: any[]) => {
+      const gun = meshes[0];
+      gun.parent = camera;
+      gun.position = new BABYLON.Vector3(0.3, -0.08, 1.5);
+      gun.scaling = new BABYLON.Vector3(0.55, 0.55, 0.55);
+      gun.rotation = new BABYLON.Vector3(0, Math.PI, 0);
+    },
+  );
+
   return scene;
 };
 
