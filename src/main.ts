@@ -40,6 +40,17 @@ const createScene = () => {
   );
   dirLight.intensity = 0.5;
 
+  // Skybox
+  const skybox = BABYLON.MeshBuilder.CreateBox("skybox", { size: 100.0 }, scene);
+  const skyboxMaterial = new BABYLON.StandardMaterial("skyboxMat", scene);
+  skyboxMaterial.backFaceCulling = false;
+  skyboxMaterial.disableLighting = true;
+  skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("assets/skybox/skybox", scene);
+  skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+  skyboxMaterial.disableLighting = true;
+  skybox.material = skyboxMaterial;
+  skybox.infiniteDistance = true;
+
   const ground = BABYLON.MeshBuilder.CreateGround(
     "ground",
     { width: 50, height: 50 },
