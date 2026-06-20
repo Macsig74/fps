@@ -17,7 +17,7 @@ export function loadWeapon(scene: BABYLON.Scene, camera: BABYLON.UniversalCamera
 
     muzzleFlash = BABYLON.MeshBuilder.CreatePlane("muzzle", { size: 0.2 }, scene);
     muzzleFlash.parent = gunMesh;
-    muzzleFlash.position = new BABYLON.Vector3(-1.0, -0.4, -1.85);
+    muzzleFlash.position = new BABYLON.Vector3(0.3, -0.4, 1.5);
     muzzleFlash.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
     const muzzleMat = new BABYLON.StandardMaterial("muzzleMat", scene);
     muzzleMat.emissiveColor = new BABYLON.Color3(1, 0.8, 0.2);
