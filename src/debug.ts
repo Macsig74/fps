@@ -1,4 +1,5 @@
-export function createFreeCamera(scene: BABYLON.Scene, canvas: HTMLCanvasElement, playerCamera: BABYLON.UniversalCamera): BABYLON.UniversalCamera {
+//Caméra de débug en freeview.
+export function createFreeCamera(scene: BABYLON.Scene, canvas: HTMLCanvasElement, playerCamera: BABYLON.UniversalCamera) {
   const camera = new BABYLON.UniversalCamera("freeCamera", new BABYLON.Vector3(0, 0, 0), scene);
   camera.position = new BABYLON.Vector3(0, 3, 0);
   camera.speed = 0.5;
@@ -19,6 +20,7 @@ export function createFreeCamera(scene: BABYLON.Scene, canvas: HTMLCanvasElement
     } else if (scene.activeCamera == playerCamera) {
       playerCamera.detachControl();
       camera.attachControl(canvas, true);
+      camera.position = playerCamera.position.clone();
       scene.activeCamera = camera;
     }
   });
