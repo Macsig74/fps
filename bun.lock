@@ -8,6 +8,8 @@
         "babylon": "^6.18.0",
       },
       "devDependencies": {
+        "babylonjs": "^9.13.0",
+        "babylonjs-loaders": "^9.13.0",
         "typescript": "^6.0.3",
         "vite": "^8.0.16",
       },
@@ -59,6 +61,12 @@
     "@tybys/wasm-util": ["@tybys/wasm-util@0.10.2", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-RoBvJ2X0wuKlWFIjrwffGw1IqZHKQqzIchKaadZZfnNpsAYp2mM0h36JtPCjNDAHGgYez/15uMBpfGwchhiMgg=="],
 
     "babylon": ["babylon@6.18.0", "", { "bin": { "babylon": "./bin/babylon.js" } }, "sha512-q/UEjfGJ2Cm3oKV71DJz9d25TPnq5rhBVL2Q4fA5wcC3jcrdn7+SssEybFIxwAvvP+YCsCYNKughoF33GxgycQ=="],
+
+    "babylonjs": ["babylonjs@9.13.0", "", {}, "sha512-wvGqnX+WMG/lZvoNJBY6czpR57sb6RU69cvP7DzZSBkAvaX8gWGTLtiDWYoKltL788KWHSXrbE5CRPplAUGatQ=="],
+
+    "babylonjs-gltf2interface": ["babylonjs-gltf2interface@9.13.0", "", {}, "sha512-G1476kl/+wyFjztY2Z56TXzSGAo6q1GKH7d6iqKkmZ0UsmN5xYQyDcgdnaZg8tpHn3Urp4vRE9Jl9FMsm1LYcA=="],
+
+    "babylonjs-loaders": ["babylonjs-loaders@9.13.0", "", { "dependencies": { "babylonjs": "9.13.0", "babylonjs-gltf2interface": "9.13.0" } }, "sha512-xO26gzQEJ9Oy17MH2pfGSDzNuTMSai+0mxAR3RAAl3+uW5E57GuJAVqx09Cb2SEoHLFddMRwiHkvfibn9L21Rw=="],
 
     "detect-libc": ["detect-libc@2.1.2", "", {}, "sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ=="],
 
