@@ -1,11 +1,18 @@
+import { useAmmo, isAutoMode } from "./hud.js";
+
 const gunOrigPos = new BABYLON.Vector3(0.3, -0.08, 1.5);
 const gunOrigRot = new BABYLON.Vector3(0, Math.PI, 0);
 
 let gunMesh: BABYLON.AbstractMesh | null = null;
 let muzzleFlash: BABYLON.Mesh | null = null;
+let autoInterval: number | null = null;
 
-const gunshotAudio = new Audio("assets/gunshot.ogg");
-gunshotAudio.volume = 0.5;
+const semiAudio = new Audio("assets/gunshot.ogg");
+semiAudio.volume = 0.5;
+
+const autoAudio = new Audio("assets/spam.ogg");
+autoAudio.volume = 0.5;
+autoAudio.loop = true;
 
 export function loadWeapon(scene: BABYLON.Scene, camera: BABYLON.UniversalCamera) {
   BABYLON.SceneLoader.ImportMesh("", "assets/", "ak.gltf", scene, (meshes) => {
@@ -27,9 +34,11 @@ export function loadWeapon(scene: BABYLON.Scene, camera: BABYLON.UniversalCamera
   });
 }
 
-export function shoot() {
-  gunshotAudio.currentTime = 0;
-  gunshotAudio.play();
+function shoot(playSound = true) {
+  if (playSound) {
+    semiAudio.currentTime = 0;
+    semiAudio.play();
+  }
 
   if (muzzleFlash) {
     (muzzleFlash.material as BABYLON.StandardMaterial).alpha = 1;
@@ -48,6 +57,26 @@ export function shoot() {
   }
 }
 
+function fireOnce(scene: BABYLON.Scene, engine: BABYLON.Engine, camera: BABYLON.UniversalCamera, playSound = true) {
+  if (!useAmmo()) return;
+  shoot(playSound);
+
+  const ray = scene.createPickingRay(
+    engine.getRenderWidth() / 2,
+    engine.getRenderHeight() / 2,
+    BABYLON.Matrix.Identity(),
+    camera,
+  );
+  const hit = scene.pickWithRay(ray);
+  if (hit && hit.pickedPoint) {
+    const spark = BABYLON.MeshBuilder.CreateSphere("spark", { diameter: 0.15 }, scene);
+    spark.position = hit.pickedPoint;
+    spark.material = new BABYLON.StandardMaterial("sparkMat", scene);
+    (spark.material as BABYLON.StandardMaterial).emissiveColor = new BABYLON.Color3(1, 1, 0);
+    setTimeout(() => spark.dispose(), 200);
+  }
+}
+
 export function setupShooting(scene: BABYLON.Scene, engine: BABYLON.Engine, camera: BABYLON.UniversalCamera) {
   scene.onPointerObservable.add((pointerInfo) => {
     if (
@@ -55,21 +84,29 @@ export function setupShooting(scene: BABYLON.Scene, engine: BABYLON.Engine, came
       (pointerInfo.event as PointerEvent).button === 0 &&
       document.pointerLockElement
     ) {
-      shoot();
+      if (isAutoMode()) {
+        fireOnce(scene, engine, camera, false);
+        autoAudio.currentTime = 0;
+        autoAudio.play();
+        autoInterval = window.setInterval(() => {
+          if (!useAmmo()) {
+            if (autoInterval) window.clearInterval(autoInterval);
+            autoInterval = null;
+            autoAudio.pause();
+            return;
+          }
+          shoot(false);
+        }, 100);
+      } else {
+        fireOnce(scene, engine, camera, true);
+      }
+    }
 
-      const ray = scene.createPickingRay(
-        engine.getRenderWidth() / 2,
-        engine.getRenderHeight() / 2,
-        BABYLON.Matrix.Identity(),
-        camera,
-      );
-      const hit = scene.pickWithRay(ray);
-      if (hit && hit.pickedPoint) {
-        const spark = BABYLON.MeshBuilder.CreateSphere("spark", { diameter: 0.15 }, scene);
-        spark.position = hit.pickedPoint;
-        spark.material = new BABYLON.StandardMaterial("sparkMat", scene);
-        (spark.material as BABYLON.StandardMaterial).emissiveColor = new BABYLON.Color3(1, 1, 0);
-        setTimeout(() => spark.dispose(), 200);
+    if (pointerInfo.type === BABYLON.PointerEventTypes.POINTERUP) {
+      if (autoInterval) {
+        window.clearInterval(autoInterval);
+        autoInterval = null;
+        autoAudio.pause();
       }
     }
   });
