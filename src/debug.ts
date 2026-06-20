@@ -24,4 +24,6 @@ export function createFreeCamera(scene: BABYLON.Scene, canvas: HTMLCanvasElement
       scene.activeCamera = camera;
     }
   });
+
+  return camera;
 }
