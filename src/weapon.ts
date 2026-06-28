@@ -21,17 +21,16 @@ export function loadWeapon(scene: BABYLON.Scene, camera: BABYLON.UniversalCamera
     gunMesh.position = gunOrigPos.clone();
     gunMesh.scaling = new BABYLON.Vector3(0.55, 0.55, 0.55);
     gunMesh.rotation = gunOrigRot.clone();
-
-    muzzleFlash = BABYLON.MeshBuilder.CreatePlane("muzzle", { size: 0.2 }, scene);
-    muzzleFlash.parent = gunMesh;
-    muzzleFlash.position = new BABYLON.Vector3(0.3, -0.4, 1.5);
-    muzzleFlash.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
-    const muzzleMat = new BABYLON.StandardMaterial("muzzleMat", scene);
-    muzzleMat.emissiveColor = new BABYLON.Color3(1, 0.8, 0.2);
-    muzzleMat.disableLighting = true;
-    muzzleMat.alpha = 0;
-    muzzleFlash.material = muzzleMat;
   });
+
+  muzzleFlash = BABYLON.MeshBuilder.CreatePlane("muzzle", { size: 0.2 }, scene);
+  muzzleFlash.parent = camera;
+  muzzleFlash.position = new BABYLON.Vector3(0.3, 0, 1.5);
+  const muzzleMat = new BABYLON.StandardMaterial("muzzleMat", scene);
+  muzzleMat.emissiveColor = new BABYLON.Color3(1, 0.8, 0.2);
+  muzzleMat.disableLighting = true;
+  muzzleMat.alpha = 0;
+  muzzleFlash.material = muzzleMat;
 }
 
 function shoot(playSound = true) {
